@@ -1,0 +1,1835 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão Acadêmica - Microsserviços</title>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent-primary: #58a6ff;
+            --accent-secondary: #1f6feb;
+            --border-color: #30363d;
+            --card-bg: #21262d;
+            --code-bg: #161b22;
+            --gradient: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--gradient);
+            min-height: 100vh;
+            padding: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            color: var(--accent-primary);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-primary) 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            border: 1px solid var(--border-color);
+        }
+
+        nav {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            position: fixed;
+            top: 260px;
+            right: 20px;
+            width: 280px;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        nav h3 {
+            margin-bottom: 15px;
+            color: var(--accent-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        nav a {
+            display: block;
+            margin: 8px 0;
+            padding: 10px 15px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        nav a:hover {
+            background: var(--accent-primary);
+            color: white;
+            transform: translateX(5px);
+            border-color: var(--accent-primary);
+        }
+
+        .main-content {
+            margin-right: 320px;
+            transition: margin 0.3s ease;
+        }
+
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+        }
+
+        .section h2 {
+            font-size: 2em;
+            color: var(--accent-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h3 {
+            font-size: 1.5em;
+            color: var(--accent-secondary);
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .section h4 {
+            font-size: 1.2em;
+            color: var(--accent-primary);
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .tech-card {
+            background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-primary) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .tech-card h4 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .tech-card ul {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .tech-card li {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tech-card li:last-child {
+            border-bottom: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-primary) 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+        }
+
+        tr:nth-child(even) td {
+            background: var(--bg-secondary);
+        }
+
+        tr:hover td {
+            background: var(--accent-secondary);
+            color: white;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: var(--accent-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: var(--text-primary);
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            line-height: 1.4;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        pre code {
+            color: inherit;
+            background: none;
+            padding: 0;
+            border: none;
+        }
+
+        .architecture {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid var(--accent-primary);
+            margin: 25px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            color: var(--text-primary);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            line-height: 1.4;
+        }
+
+        .architecture .folder {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .architecture .file {
+            color: var(--accent-primary);
+        }
+
+        .architecture .comment {
+            color: var(--text-secondary);
+        }
+
+        .architecture-visual {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--accent-primary);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .arch-layer {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .frontend-layer {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            color: white !important;
+        }
+
+        .frontend-layer h4,
+        .frontend-layer p {
+            color: white !important;
+        }
+
+        .microservices-layer {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .service-box {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--accent-primary);
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 150px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .service-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(88, 166, 255, 0.3);
+        }
+
+        .database-layer {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .db-box {
+            background: var(--bg-secondary);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 120px;
+            text-align: center;
+            color: #ffd700;
+        }
+
+        .connection-line {
+            height: 2px;
+            background: var(--accent-primary);
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .connection-line::after {
+            content: '?';
+            position: absolute;
+            right: 50%;
+            top: -10px;
+            color: var(--accent-primary);
+            font-size: 16px;
+        }
+
+        .module-card {
+            background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-primary) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        .module-card h4 {
+            color: white;
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+
+        .module-card p {
+            margin-bottom: 10px;
+        }
+
+        .file-structure {
+            background: var(--code-bg);
+            color: var(--text-primary);
+            padding: 25px;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 0.95em;
+            line-height: 1.8;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .file-structure code {
+            color: inherit;
+            background: none;
+            padding: 0;
+            border: none;
+        }
+
+        .file-tree {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--accent-primary);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            line-height: 1.8;
+        }
+
+        .file-tree .folder {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .file-tree .file {
+            color: var(--accent-primary);
+        }
+
+        .file-tree .comment {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .file-tree .indent-1 { margin-left: 20px; }
+        .file-tree .indent-2 { margin-left: 40px; }
+        .file-tree .indent-3 { margin-left: 60px; }
+        .file-tree .indent-4 { margin-left: 80px; }
+
+        .tree-line {
+            display: block;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+        }
+
+        .tree-line:hover {
+            background: rgba(88, 166, 255, 0.1);
+            border-radius: 4px;
+            padding: 2px 8px;
+            margin: 1px -8px;
+        }
+
+        .note {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .note strong {
+            color: #ffc107;
+        }
+
+        .success {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid #28a745;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .error {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid #dc3545;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .concept-card {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--accent-primary);
+            padding: 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .concept-card:hover {
+            box-shadow: 0 5px 20px rgba(88, 166, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .concept-card h4 {
+            color: var(--accent-primary);
+            margin-top: 0;
+        }
+
+        .endpoint-method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85em;
+            margin-right: 10px;
+        }
+
+        .endpoint-get {
+            background: rgba(23, 162, 184, 0.2);
+            color: #17a2b8;
+            border: 1px solid #17a2b8;
+        }
+
+        .endpoint-post {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+
+        .endpoint-put {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+
+        .endpoint-delete {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+
+        json-response {
+            display: block;
+            background: var(--code-bg);
+            color: var(--text-primary);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        footer {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-top: 30px;
+            backdrop-filter: blur(20px);
+        }
+
+        footer p {
+            margin: 10px 0;
+            color: var(--text-secondary);
+        }
+
+        footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--accent-secondary);
+            text-decoration: underline;
+        }
+
+        .json-example {
+            background: var(--code-bg);
+            color: var(--text-primary);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-size: 0.9em;
+            border: 1px solid var(--border-color);
+        }
+
+        .folder-icon {
+            color: #ffc107;
+            margin-right: 5px;
+        }
+
+        .file-icon {
+            color: var(--accent-primary);
+            margin-right: 5px;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .emoji {
+            font-size: 1.3em;
+            margin-right: 5px;
+        }
+
+        @media (max-width: 1024px) {
+            nav {
+                position: static;
+                width: 100%;
+                margin-bottom: 20px;
+                top: auto;
+                right: auto;
+                max-height: none;
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            nav a {
+                display: inline-block;
+                margin: 8px 15px 8px 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            header p {
+                font-size: 1em;
+            }
+
+            nav a {
+                display: block;
+                margin-bottom: 10px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+            
+            .microservices-layer {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .database-layer {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <h1><span class="emoji">📚</span>Sistema de Gestão Acadêmica</h1>
+            <p><strong>Microsserviços • Arquitetura Distribuída</strong></p>
+            <p style="color: var(--text-secondary); font-size: 0.95em;">Uma aplicação educacional completa desenvolvida com Spring Boot, React e padrões modernos de desenvolvimento</p>
+            <div class="badges">
+                <span class="badge">Java 17+</span>
+                <span class="badge">Spring Boot 3.2</span>
+                <span class="badge">React 18</span>
+                <span class="badge">MySQL 8</span>
+                <span class="badge">Microsserviços</span>
+            </div>
+        </header>
+
+        <!-- NAVIGATION -->
+        <nav>
+            <h3>🧭 Navegação Rápida</h3>
+            <a href="#visao-geral">VISÃO Geral</a>
+            <a href="#tecnologias">Tecnologias</a>
+            <a href="#arquitetura">Arquitetura</a>
+            <a href="#frontend">Frontend</a>
+            <a href="#ms-aluno">ms-aluno</a>
+            <a href="#ms-curso">ms-curso</a>
+            <a href="#ms-matricula">ms-matricula</a>
+            <a href="#instalacao">Instalação</a>
+            <a href="#apis">APIs</a>
+            <a href="#conceitos">Conceitos</a>
+        </nav>
+
+        <div class="main-content">
+
+        <!-- VISÃO GERAL -->
+        <section id="visao-geral" class="section">
+            <h2><span class="emoji">🎯</span>Visão Geral do Projeto</h2>
+            
+            <p>O <strong>Sistema de Gestão Acadêmica</strong> é uma aplicação educacional que demonstra a implementação completa de uma <strong>arquitetura de microsserviços</strong> com padrões modernos de desenvolvimento distribuído.</p>
+
+            <h3>Objetivo Principal</h3>
+            <p>Este projeto foi desenvolvido para fins educacionais, ilustrando como diferentes serviços independentes podem trabalhar juntos de forma sincronizada, mantendo seus próprios bancos de dados e comunicando-se via APIs REST.</p>
+
+            <h3>O que o Sistema Gerencia</h3>
+            <ul>
+                <li><strong>👨‍🎓 Alunos</strong> → Cadastro, atualização e remoção de estudantes</li>
+                <li><strong>📚 Cursos</strong> → Administração completa de cursos disponíveis</li>
+                <li><strong>📋 matrículas</strong> → Associação entre alunos e cursos com dados enriquecidos</li>
+            </ul>
+
+            <h3>Diferencial Técnico</h3>
+            <p>O principal diferencial é a <strong>integração inteligente entre serviços</strong>: ao consultar uma matrícula, o sistema automaticamente agrega dados de alunos e cursos de forma sincronizada, sem compartilhar banco de dados entre os serviços.</p>
+
+            <div class="note">
+                <strong>🤔 Por que Microsserviços?</strong> Em uma arquitetura monolítica tradicional, toda a aplicação seria um único bloco. Com microsserviços, cada funcionalidade é um serviço independente, permitindo escalabilidade, manutenção e evolução independentes.
+            </div>
+        </section>
+
+        <!-- TECNOLOGIAS -->
+        <section id="tecnologias" class="section">
+            <h2><span class="emoji">🛠️</span>Stack de Tecnologias</h2>
+
+            <h3>Backend é Java + Spring Boot</h3>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h4>Java 17</h4>
+                    <p>Linguagem de programação compilada, type-safe e orientada a objetos. Versão LTS com melhorias de performance.</p>
+                </div>
+                <div class="tech-card">
+                    <h4>Spring Boot 3.2</h4>
+                    <p>Framework que simplifica o desenvolvimento de aplicações Java. Fornece configuração automática e embedded server.</p>
+                </div>
+                <div class="tech-card">
+                    <h4>Spring Data JPA</h4>
+                    <p>Facilita a persistência de dados. Abstrai a complexidade SQL com mapeamento objeto-relacional (ORM) via Hibernate.</p>
+                </div>
+                <div class="tech-card">
+                    <h4>MySQL 8</h4>
+                    <p>Banco de dados relacional robusto. Cada microsserviço possui seu próprio banco para isolamento de dados.</p>
+                </div>
+                <div class="tech-card">
+                    <h4>Lombok</h4>
+                    <p>Biblioteca que reduz código boilerplate (getters, setters, construtores) através de anotações.</p>
+                </div>
+                <div class="tech-card">
+                    <h4>RestTemplate</h4>
+                    <p>Cliente HTTP do Spring para comunicação síncrona entre microsserviços. Simples e confiável.</p>
+                </div>
+            </div>
+
+            <h3>Frontend é React + Node.js</h3>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h4>React 18</h4>
+                    <p>Biblioteca JavaScript para construção de interfaces reativas. Componentes reutilizáveis e estado gerenciado.</p>
+                </div>
+                <div class="tech-card">
+                    <h4>Vite 5</h4>
+                    <p>Build tool moderna extremamente Rápida. Substitui o Webpack com inicialização instantânea em dev mode.</p>
+                </div>
+                <div class="tech-card">
+                    <h4>Axios</h4>
+                    <p>Cliente HTTP para JavaScript. Simplifica requisições aos microsserviços com suporte a promises e interceptors.</p>
+                </div>
+                <div class="tech-card">
+                    <h4>React Router 6</h4>
+                    <p>Biblioteca de roteamento para SPA (Single Page Application). Permite Navegação entre páginas sem recarregar.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ARQUITETURA -->
+        <section id="arquitetura" class="section">
+            <h2><span class="emoji">🏗️</span>Arquitetura do Sistema</h2>
+
+            <h3>Diagrama Visual da Arquitetura</h3>
+            <div class="architecture-visual">
+                <div class="frontend-layer arch-layer">
+                    <h4>🧭 Frontend (React + Vite)</h4>
+                    <p><strong>http://localhost:5173</strong></p>
+                    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 10px;">
+                        <span style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 5px;">Alunos</span>
+                        <span style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 5px;">Cursos</span>
+                        <span style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 5px;">matrículas</span>
+                    </div>
+                </div>
+
+                <div class="connection-line"></div>
+
+                <div class="microservices-layer">
+                    <div class="service-box">
+                        <h4>👨‍🎓 ms-aluno</h4>
+                        <p><strong>:8081</strong></p>
+                        <small>Gerencia estudantes</small>
+                    </div>
+                    <div class="service-box">
+                        <h4>🧭 ms-curso</h4>
+                        <p><strong>:8082</strong></p>
+                        <small>Gerencia cursos</small>
+                    </div>
+                    <div class="service-box">
+                        <h4>🧭 ms-matricula</h4>
+                        <p><strong>:8083</strong></p>
+                        <small>Gerencia vínculos</small>
+                    </div>
+                </div>
+
+                <div class="connection-line"></div>
+
+                <div class="database-layer">
+                    <div class="db-box">
+                        <h4>🗄️ aluno_db</h4>
+                        <small>MySQL</small>
+                    </div>
+                    <div class="db-box">
+                        <h4>🗄️ curso_db</h4>
+                        <small>MySQL</small>
+                    </div>
+                    <div class="db-box">
+                        <h4>🗄️ matricula_db</h4>
+                        <small>MySQL</small>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Diagrama de Componentes (ASCII)</h3>
+            <div class="file-tree">
+                <div class="tree-line"><span class="comment">╔══════════════════════════════════════════════════════════════════════╗</span></div>
+                <div class="tree-line"><span class="comment">║</span>                        <span class="folder">🖥️ FRONTEND</span>                            <span class="comment">║</span></div>
+                <div class="tree-line"><span class="comment">║</span>                    <span class="file">React + Vite (:5173)</span>                      <span class="comment">║</span></div>
+                <div class="tree-line"><span class="comment">║</span>               <span class="file">[👨‍🎓 Alunos] [📚 Cursos] [📋 Matrículas]</span>                <span class="comment">║</span></div>
+                <div class="tree-line"><span class="comment">╚═══════════════════════════╤═══════════════════════════════════════════╝</span></div>
+                
+                <div class="tree-line indent-3"><span class="file">│</span> <span class="comment">HTTP Requests</span></div>
+                <div class="tree-line indent-3"><span class="file">▼</span></div>
+                
+                <div class="tree-line"><span class="comment">┌──────────────────────┼──────────────────────┐</span></div>
+                <div class="tree-line"><span class="file">│</span>                      <span class="file">│</span>                      <span class="file">│</span></div>
+                <div class="tree-line"><span class="file">▼</span>                      <span class="file">▼</span>                      <span class="file">▼</span></div>
+                
+                <div class="tree-line"><span class="comment">╭─────────────╮       ╭─────────────╮       ╭─────────────╮</span></div>
+                <div class="tree-line"><span class="comment">│</span> <span class="folder">👨‍🎓 MS-ALUNO</span> <span class="comment">│       │</span> <span class="folder">📚 MS-CURSO</span> <span class="comment">│       │</span> <span class="folder">📋 MS-MATRÍCULA</span> <span class="comment">│</span></div>
+                <div class="tree-line"><span class="comment">│</span>   <span class="file">Port :8081</span> <span class="comment">│       │</span>   <span class="file">Port :8082</span> <span class="comment">│       │</span>   <span class="file">Port :8083</span>   <span class="comment">│</span></div>
+                <div class="tree-line"><span class="comment">│</span>   <span class="comment">Spring Boot</span> <span class="comment">│       │</span>   <span class="comment">Spring Boot</span> <span class="comment">│       │</span>   <span class="comment">Spring Boot</span>   <span class="comment">│</span></div>
+                <div class="tree-line"><span class="comment">╰──────┬──────╯       ╰──────┬──────╯       ╰──────┬──────╯</span></div>
+                
+                <div class="tree-line indent-1"><span class="file">│</span> <span class="comment">JPA</span>                     <span class="file">│</span> <span class="comment">JPA</span>               <span class="file">│</span> <span class="comment">JPA + RestTemplate</span></div>
+                <div class="tree-line indent-1"><span class="file">▼</span>                     <span class="file">▼</span>            <span class="comment">┌────────┴────────┐</span></div>
+                <div class="tree-line indent-4"><span class="file">▼</span>                     <span class="file">▼</span></div>
+                
+                <div class="tree-line"><span class="comment">┌─────────────┐       ┌─────────────┐       ┌─────────────┐</span></div>
+                <div class="tree-line"><span class="comment">│</span> <span class="folder">🗄️ aluno_db</span>  <span class="comment">│       │</span> <span class="folder">🗄️ curso_db</span>  <span class="comment">│       │</span> <span class="folder">🗄️ matrícula_db</span> <span class="comment">│</span></div>
+                <div class="tree-line"><span class="comment">│</span>   <span class="file">MySQL 8</span>    <span class="comment">│       │</span>   <span class="file">MySQL 8</span>    <span class="comment">│       │</span>   <span class="file">MySQL 8</span>     <span class="comment">│</span></div>
+                <div class="tree-line"><span class="comment">└─────────────┘       └─────────────┘       └─────────────┘</span></div>
+                
+                <div class="tree-line indent-4"><span class="file">▲</span> <span class="comment">Busca dados em: ms-aluno + ms-curso</span></div>
+                
+                <div class="tree-line"><br></div>
+                <div class="tree-line"><span class="comment">════════════════════════ FLUXO SIMPLIFICADO ════════════════════════</span></div>
+                <div class="tree-line"><br></div>
+                
+                <div class="tree-line"><span class="file">1.</span> <span class="folder">Frontend</span> <span class="comment">solicita lista de matrículas</span></div>
+                <div class="tree-line"><span class="file">2.</span> <span class="folder">MS-MATRÍCULA</span> <span class="comment">consulta seu próprio banco</span></div>
+                <div class="tree-line"><span class="file">3.</span> <span class="folder">MS-MATRÍCULA</span> <span class="comment">busca dados do aluno no</span> <span class="folder">MS-ALUNO</span></div>
+                <div class="tree-line"><span class="file">4.</span> <span class="folder">MS-MATRÍCULA</span> <span class="comment">busca dados do curso no</span> <span class="folder">MS-CURSO</span></div>
+                <div class="tree-line"><span class="file">5.</span> <span class="folder">MS-MATRÍCULA</span> <span class="comment">combina tudo e retorna JSON completo</span></div>
+                
+                <div class="tree-line"><br></div>
+                <div class="tree-line"><span class="comment">════════════════════════ CARACTERÍSTICAS ════════════════════════</span></div>
+                <div class="tree-line"><br></div>
+                
+                <div class="tree-line"><span class="folder">✓</span> <span class="comment">Cada microsserviço tem seu próprio banco de dados</span></div>
+                <div class="tree-line"><span class="folder">✓</span> <span class="comment">Comunicação via REST APIs (HTTP)</span></div>
+                <div class="tree-line"><span class="folder">✓</span> <span class="comment">MS-MATRÍCULA atua como orquestrador de dados</span></div>
+                <div class="tree-line"><span class="folder">✓</span> <span class="comment">Frontend recebe dados já agregados e prontos</span></div>
+            </div>
+
+            <h3>Padrão de Arquitetura: Database per Service</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>Descrição</th>
+                        <th>Benefício</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Banco Isolado</strong></td>
+                        <td>Cada microsserviço possui seu próprio banco de dados</td>
+                        <td>Evita acoplamento e permite evolução independente</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sem Compartilhamento</strong></td>
+                        <td>serviços não acessam banco de dados um do outro</td>
+                        <td>Autonomia total; mudanças não afetam outros serviços</td>
+                    </tr>
+                    <tr>
+                        <td><strong>comunicação síncrona</strong></td>
+                        <td>RestTemplate para chamadas HTTP entre serviços</td>
+                        <td>Simples, direto e fácil de debugar</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Enriquecimento de Dados</strong></td>
+                        <td>ms-matricula agrega dados de múltiplas fontes</td>
+                        <td>Respostas completas ao cliente em uma única requisição</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Fluxo de comunicação: Exemplo Prático</h3>
+            <div class="module-card">
+                <h4>Cenário: Consultar uma matrícula com Dados Completos</h4>
+                <ol>
+                    <li><strong>Cliente (Frontend)</strong> faz: <code>GET /matriculas/1</code></li>
+                    <li><strong>ms-matricula</strong> recebe a requisição</li>
+                    <li><strong>ms-matricula</strong> busca em seu banco: matricula_id=1</li>
+                    <li><strong>ms-matricula</strong> extrai alunoId=5 e cursoId=3</li>
+                    <li><strong>ms-matricula chama ms-aluno:</strong> <code>GET http://localhost:8081/alunos/5</code></li>
+                    <li><strong>ms-matricula chama ms-curso:</strong> <code>GET http://localhost:8082/cursos/3</code></li>
+                    <li><strong>ms-matricula agrega</strong> os dados: matrícula + aluno + curso</li>
+                    <li><strong>Retorna ao cliente</strong> uma resposta enriquecida com todos os dados</li>
+                </ol>
+            </div>
+
+            <div class="success">
+                <strong>Resultado:</strong> O cliente recebe TUDO em uma resposta, sem precisar fazer múltiplas requisições.
+            </div>
+        </section>
+
+        <!-- FRONTEND -->
+        <section id="frontend" class="section">
+            <h2><span class="emoji">⚛️</span>Frontend • aplicação React</h2>
+
+            <h3>O que É o Frontend?</h3>
+            <p>O frontend é a <strong>interface visual</strong> que os usuários interagem. Desenvolvido em <strong>React com Vite</strong>, permite criar um sistema acadêmico completo com cadastro de alunos, cursos e matrículas.</p>
+
+            <h3>Estrutura de Pastas</h3>
+            <div class="file-tree">
+                <div class="tree-line"><span class="folder">🧭 frontend/</span></div>
+                <div class="tree-line indent-1">+-- <span class="folder">🧭 src/</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 pages/</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 Alunos.jsx</span> <span class="comment"># Página de gerenciamento de alunos</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 Cursos.jsx</span> <span class="comment"># Página de gerenciamento de cursos</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 Matriculas.jsx</span> <span class="comment"># Página de gerenciamento de matrículas</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 services/</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 api.js</span> <span class="comment"># Cliente HTTP (Axios) - comunica com APIs</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="file">🧭 App.jsx</span> <span class="comment"># Componente raiz da aplicação</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="file">🧭 App.css</span> <span class="comment"># Estilos globais</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="file">🧭 main.jsx</span> <span class="comment"># Ponto de entrada da aplicação</span></div>
+                <div class="tree-line indent-1">+-- <span class="file">🧭 index.html</span></div>
+                <div class="tree-line indent-1">+-- <span class="file">🧭 vite.config.js</span></div>
+                <div class="tree-line indent-1">+-- <span class="file">🧭 package.json</span></div>
+            </div>
+
+            <h3>Arquivos Principais</h3>
+
+            <h4><span class="file-icon">📄</span>package.json</h4>
+            <p>Define dependências do projeto e scripts de Execução:</p>
+            <pre><code>{
+  "name": "frontend",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "vite",           # Inicia servidor de desenvolvimento
+    "build": "vite build",   # Compila para produção
+    "preview": "vite preview" # Visualiza build de produção
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0",
+    "axios": "^1.6.7"
+  }
+}</code></pre>
+
+            <h4><span class="file-icon">⚡</span>src/services/api.js</h4>
+            <p>Cliente HTTP que conecta o frontend aos microsserviços:</p>
+            <pre><code>import axios from 'axios';
+
+const API_BASE = 'http://localhost';
+
+export const api = {
+  alunos: {
+    listar: () => axios.get(`${API_BASE}:8081/alunos`),
+    buscar: (id) => axios.get(`${API_BASE}:8081/alunos/${id}`),
+    criar: (dados) => axios.post(`${API_BASE}:8081/alunos`, dados),
+    atualizar: (id, dados) => axios.put(`${API_BASE}:8081/alunos/${id}`, dados),
+    remover: (id) => axios.delete(`${API_BASE}:8081/alunos/${id}`)
+  },
+  // ... similar para cursos e matrículas
+};</code></pre>
+
+            <h4><span class="file-icon">⚛️</span>src/pages/Alunos.jsx</h4>
+            <p>Componente React que renderiza a interface de alunos:</p>
+            <ul>
+                <li>Lista todos os alunos cadastrados</li>
+                <li>Formulário para criar novo aluno</li>
+                <li>Edição e exclusão de alunos</li>
+                <li>Chamadas é API via Axios</li>
+            </ul>
+
+            <h3>Como Funciona</h3>
+            <ol>
+                <li>Usuário abre a aplicação em <code>http://localhost:5173</code></li>
+                <li>React renderiza os componentes na tela</li>
+                <li>Usuário clica em "Alunos" → abre Página Alunos.jsx</li>
+                <li>Componente chama <code>api.alunos.listar()</code></li>
+                <li>Axios faz requisição para <code>http://localhost:8081/alunos</code></li>
+                <li>Backend retorna JSON com lista de alunos</li>
+                <li>React renderiza a lista na tela</li>
+            </ol>
+
+            <div class="note">
+                <strong>🧭 Vite vs Webpack:</strong> Vite é muito mais rápido que Webpack. Com Vite, mudanças no código aparecem instantaneamente no navegador (HMR - Hot Module Replacement).
+            </div>
+        </section>
+
+        <!-- MS-ALUNO -->
+        <section id="ms-aluno" class="section">
+            <h2><span class="emoji">👨‍🎓</span>ms-aluno • microsserviço de Alunos</h2>
+
+            <h3>Responsabilidade</h3>
+            <p>Gerencia o <strong>CRUD completo de alunos</strong> (Create, Read, Update, Delete). é totalmente independente e responsável por seus próprios dados.</p>
+
+            <h3>Estrutura de Pastas</h3>
+            <div class="file-tree">
+                <div class="tree-line"><span class="folder">🧭 ms-aluno/</span></div>
+                <div class="tree-line indent-1">+-- <span class="folder">🧭 src/main/java/com/a3/msaluno/</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="file">🧭 MsAlunoApplication.java</span> <span class="comment"># Classe principal - inicia o Spring</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 controller/</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 AlunoController.java</span> <span class="comment"># REST endpoints (@GetMapping, @PostMapping, etc)</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 model/</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 Aluno.java</span> <span class="comment"># Entidade JPA - mapeada para tabela "alunos"</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 service/</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 AlunoService.java</span> <span class="comment"># Lógica de negócio</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 repository/</span></div>
+                <div class="tree-line indent-3">é       +-- <span class="file">🧭 AlunoRepository.java</span> <span class="comment"># Interface para acesso ao banco</span></div>
+                <div class="tree-line indent-1">+-- <span class="folder">🧭 src/main/resources/</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="file">🧭 application.properties</span> <span class="comment"># Configurações (porta, banco, etc)</span></div>
+                <div class="tree-line indent-1">+-- <span class="file">🧭 pom.xml</span> <span class="comment"># Gerenciador de dependências Maven</span></div>
+            </div>
+
+            <h3>Arquivos Principais</h3>
+
+            <h4><span class="file-icon">☕</span>MsAlunoApplication.java</h4>
+            <p>Ponto de entrada da aplicação Spring Boot:</p>
+            <pre><code>@SpringBootApplication
+public class MsAlunoApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MsAlunoApplication.class, args);
+    }
+}</code></pre>
+            <p>Quando executado, Spring Boot:</p>
+            <ul>
+                <li>Inicia o servidor Tomcat embutido na porta 8081</li>
+                <li>Conecta ao banco MySQL "aluno_db"</li>
+                <li>Cria a tabela "alunos" automaticamente (se não existir)</li>
+                <li>Escuta requisições HTTP</li>
+            </ul>
+
+            <h4><span class="file-icon">🏛️</span>model/Aluno.java</h4>
+            <p>Entidade que representa um aluno no banco de dados:</p>
+            <pre><code>@Entity
+@Table(name = "alunos")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Aluno {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String nome;        // Nome do aluno
+    private String email;       // Email único do aluno
+}</code></pre>
+            <p>anotações explicadas:</p>
+            <ul>
+                <li><code>@Entity</code> é Indica que é uma entidade JPA mapeada ao banco</li>
+                <li><code>@Table(name = "alunos")</code> é Nome da tabela no MySQL</li>
+                <li><code>@Data</code> é Lombok: gera getters, setters, toString, equals</li>
+                <li><code>@Id</code> é Chave primária</li>
+                <li><code>@GeneratedValue</code> é Auto-incremento</li>
+            </ul>
+
+            <h4><span class="file-icon">🗄️</span>repository/AlunoRepository.java</h4>
+            <p>Interface para acesso ao banco de dados:</p>
+            <pre><code>@Repository
+public interface AlunoRepository extends JpaRepository&lt;Aluno, Long&gt; {
+    // JpaRepository fornece automaticamente:
+    // - findAll() - lista todos
+    // - findById(id) - busca por ID
+    // - save(aluno) - insere ou atualiza
+    // - deleteById(id) - deleta por ID
+}</code></pre>
+            <p>Spring Data JPA gera a implementação <strong>automaticamente</strong>. não precisa escrever SQL!</p>
+
+            <h4><span class="file-icon">⚙️</span>service/AlunoService.java</h4>
+            <p>Camada de Lógica de negócio:</p>
+            <pre><code>@Service
+public class AlunoService {
+    @Autowired
+    private AlunoRepository repository;
+    
+    public List&lt;Aluno&gt; listarTodos() {
+        return repository.findAll();
+    }
+    
+    public Aluno buscarPorId(Long id) {
+        return repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
+    }
+    
+    public Aluno criar(Aluno aluno) {
+        return repository.save(aluno);
+    }
+    
+    public Aluno atualizar(Long id, Aluno aluno) {
+        Aluno existente = buscarPorId(id);
+        existente.setNome(aluno.getNome());
+        existente.setEmail(aluno.getEmail());
+        return repository.save(existente);
+    }
+    
+    public void deletar(Long id) {
+        repository.deleteById(id);
+    }
+}</code></pre>
+
+            <h4><span class="file-icon">🎮</span>controller/AlunoController.java</h4>
+            <p>Expõe os endpoints REST:</p>
+            <pre><code>@RestController
+@RequestMapping("/alunos")
+public class AlunoController {
+    @Autowired
+    private AlunoService service;
+    
+    @GetMapping
+    public List&lt;Aluno&gt; listar() {
+        return service.listarTodos();
+    }
+    
+    @GetMapping("/{id}")
+    public Aluno buscar(@PathVariable Long id) {
+        return service.buscarPorId(id);
+    }
+    
+    @PostMapping
+    public Aluno criar(@RequestBody Aluno aluno) {
+        return service.criar(aluno);
+    }
+    
+    @PutMapping("/{id}")
+    public Aluno atualizar(@PathVariable Long id, @RequestBody Aluno aluno) {
+        return service.atualizar(id, aluno);
+    }
+    
+    @DeleteMapping("/{id}")
+    public void deletar(@PathVariable Long id) {
+        service.deletar(id);
+    }
+}</code></pre>
+
+            <h4><span class="file-icon">⚙️</span>application.properties</h4>
+            <p>Configurações da aplicação:</p>
+            <pre><code>spring.application.name=ms-aluno
+server.port=8081
+
+# Banco de dados MySQL
+spring.datasource.url=jdbc:mysql://localhost:3306/aluno_db
+spring.datasource.username=root
+spring.datasource.password=root
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA/Hibernate
+spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true</code></pre>
+
+            <h3>Fluxo de uma requisição GET /alunos</h3>
+            <div class="module-card">
+                <ol>
+                    <li>Frontend faz: <code>GET http://localhost:8081/alunos</code></li>
+                    <li>Spring roteia para <code>AlunoController.listar()</code></li>
+                    <li>Controller chama <code>service.listarTodos()</code></li>
+                    <li>Service chama <code>repository.findAll()</code></li>
+                    <li>Spring Data JPA executa: <code>SELECT * FROM alunos;</code></li>
+                    <li>Banco retorna lista de alunos</li>
+                    <li>Service retorna para Controller</li>
+                    <li>Controller converte para JSON e retorna ao frontend</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- MS-CURSO -->
+        <section id="ms-curso" class="section">
+            <h2><span class="emoji">📚</span>ms-curso • microsserviço de Cursos</h2>
+
+            <h3>Responsabilidade</h3>
+            <p>Gerencia o <strong>CRUD completo de cursos</strong>. Funciona de forma idêntica ao ms-aluno, mas para a entidade Curso.</p>
+
+            <h3>Estrutura (idêntica ao ms-aluno)</h3>
+            <div class="file-tree">
+                <div class="tree-line"><span class="folder">🧭 ms-curso/</span></div>
+                <div class="tree-line indent-1">+-- <span class="folder">🧭 src/main/java/com/a3/mscurso/</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="file">🧭 MsCursoApplication.java</span> <span class="comment"># Classe principal - inicia o Spring</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 controller/</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 CursoController.java</span> <span class="comment"># REST endpoints para cursos</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 model/</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 Curso.java</span> <span class="comment"># Entidade JPA - tabela "cursos"</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 service/</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 CursoService.java</span> <span class="comment"># Lógica de negócio para cursos</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 repository/</span></div>
+                <div class="tree-line indent-3">é       +-- <span class="file">🧭 CursoRepository.java</span> <span class="comment"># Acesso ao banco de cursos</span></div>
+                <div class="tree-line indent-1">+-- <span class="folder">🧭 src/main/resources/</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="file">🧭 application.properties</span> <span class="comment"># Configurações (porta 8082)</span></div>
+                <div class="tree-line indent-1">+-- <span class="file">🧭 pom.xml</span> <span class="comment"># dependências Maven</span></div>
+            </div>
+
+            <h3>Diferenças em Relação ao ms-aluno</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>ms-aluno</th>
+                        <th>ms-curso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Porta</strong></td>
+                        <td>8081</td>
+                        <td>8082</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Banco</strong></td>
+                        <td>aluno_db</td>
+                        <td>curso_db</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tabela</strong></td>
+                        <td>alunos</td>
+                        <td>cursos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Campos</strong></td>
+                        <td>id, nome, email</td>
+                        <td>id, nome, descricao</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4><span class="file-icon">📚</span>model/Curso.java</h4>
+            <pre><code>@Entity
+@Table(name = "cursos")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Curso {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String nome;           // Nome do curso
+    private String descricao;      // descrição do curso
+}</code></pre>
+
+            <h3>Endpoints</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Método</th>
+                        <th>Rota</th>
+                        <th>descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="endpoint-method endpoint-get">GET</span></td>
+                        <td><code>/cursos</code></td>
+                        <td>Lista todos os cursos</td>
+                    </tr>
+                    <tr>
+                        <td><span class="endpoint-method endpoint-get">GET</span></td>
+                        <td><code>/cursos/{id}</code></td>
+                        <td>Busca curso por ID</td>
+                    </tr>
+                    <tr>
+                        <td><span class="endpoint-method endpoint-post">POST</span></td>
+                        <td><code>/cursos</code></td>
+                        <td>Cria novo curso</td>
+                    </tr>
+                    <tr>
+                        <td><span class="endpoint-method endpoint-put">PUT</span></td>
+                        <td><code>/cursos/{id}</code></td>
+                        <td>Atualiza curso</td>
+                    </tr>
+                    <tr>
+                        <td><span class="endpoint-method endpoint-delete">DELETE</span></td>
+                        <td><code>/cursos/{id}</code></td>
+                        <td>Deleta curso</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- MS-MATRICULA -->
+        <section id="ms-matricula" class="section">
+            <h2><span class="emoji">📋</span>ms-matricula • microsserviço de matrículas</h2>
+
+            <h3>Responsabilidade</h3>
+            <p>Gerencia o <strong>CRUD de matrículas</strong> E <strong>orquestra comunicação</strong> com ms-aluno e ms-curso. É o serviço mais complexo.</p>
+
+            <h3>Estrutura</h3>
+            <div class="file-tree">
+                <div class="tree-line"><span class="folder">🧭 ms-matricula/</span></div>
+                <div class="tree-line indent-1">+-- <span class="folder">🧭 src/main/java/com/a3/msmatricula/</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="file">🧭 MsMatriculaApplication.java</span> <span class="comment"># Classe principal</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 config/</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 RestTemplateConfig.java</span> <span class="comment"># ⚙️ configuração de comunicação inter-serviços</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 controller/</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 MatriculaController.java</span> <span class="comment"># REST endpoints para matrículas</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 model/</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 Matricula.java</span> <span class="comment"># Entidade principal</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 MatriculaDetalhe.java</span> <span class="comment"># 📊 DTO com dados enriquecidos</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 AlunoInfo.java</span> <span class="comment"># 📊 Dados do aluno (recebido de ms-aluno)</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 CursoInfo.java</span> <span class="comment"># 📊 Dados do curso (recebido de ms-curso)</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 service/</span></div>
+                <div class="tree-line indent-3">│   │   +-- <span class="file">🧭 MatriculaService.java</span> <span class="comment"># 🔄 Orquestra chamadas a outros serviços</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="folder">🧭 repository/</span></div>
+                <div class="tree-line indent-3">│       +-- <span class="file">🧭 MatriculaRepository.java</span> <span class="comment"># Acesso ao banco de matrículas</span></div>
+                <div class="tree-line indent-1">+-- <span class="folder">🧭 src/main/resources/</span></div>
+                <div class="tree-line indent-2">│   +-- <span class="file">🧭 application.properties</span> <span class="comment"># Configurações (porta 8083)</span></div>
+                <div class="tree-line indent-1">+-- <span class="file">🧭 pom.xml</span> <span class="comment"># dependências Maven</span></div>
+            </div>
+
+            <h3>Arquivos Especiais</h3>
+
+            <h4><span class="file-icon">🔧</span>config/RestTemplateConfig.java</h4>
+            <p>Configura o cliente HTTP para comunicação com outros serviços:</p>
+            <pre><code>@Configuration
+public class RestTemplateConfig {
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+}</code></pre>
+            <p>O <code>RestTemplate</code> permite chamar APIs de outros serviços de forma fácil:</p>
+            <pre><code>restTemplate.getForObject("http://localhost:8081/alunos/{id}", Aluno.class, id);</code></pre>
+
+            <h4><span class="file-icon">📋</span>model/Matricula.java</h4>
+            <p>Entidade básica de matrícula:</p>
+            <pre><code>@Entity
+@Table(name = "matriculas")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Matricula {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private Long alunoId;       // referência ao ms-aluno
+    private Long cursoId;       // referência ao ms-curso
+}</code></pre>
+
+            <h4><span class="file-icon">👨‍🎓</span>model/AlunoInfo.java</h4>
+            <p>Dados do aluno recebidos de ms-aluno:</p>
+            <pre><code>@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AlunoInfo {
+    private Long id;
+    private String nome;
+    private String email;
+}</code></pre>
+
+            <h4><span class="file-icon">📚</span>model/CursoInfo.java</h4>
+            <p>Dados do curso recebidos de ms-curso:</p>
+            <pre><code>@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CursoInfo {
+    private Long id;
+    private String nome;
+    private String descricao;
+}</code></pre>
+
+            <h4><span class="file-icon">📊</span>model/MatriculaDetalhe.java</h4>
+            <p>DTO (Data Transfer Object) com todos os dados enriquecidos:</p>
+            <pre><code>@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class MatriculaDetalhe {
+    private Long id;
+    private Long alunoId;
+    private Long cursoId;
+    private AlunoInfo alunoInfo;      // Dados agregados do aluno
+    private CursoInfo cursoInfo;      // Dados agregados do curso
+}</code></pre>
+
+            <h4><span class="file-icon">🔄</span>service/MatriculaService.java</h4>
+            <p>Lógica de orquestração (a mágica acontece aqui!):</p>
+            <pre><code>@Service
+public class MatriculaService {
+    @Autowired
+    private MatriculaRepository repository;
+    
+    @Autowired
+    private RestTemplate restTemplate;
+    
+    // ? Método que agrega dados de outros serviços
+    public MatriculaDetalhe buscarComDetalhes(Long id) {
+        // 1. Busca matrícula em seu próprio banco
+        Matricula matricula = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("matrícula não encontrada"));
+        
+        // 2. Chama ms-aluno para pegar dados do aluno
+        AlunoInfo alunoInfo = restTemplate.getForObject(
+            "http://localhost:8081/alunos/{id}",
+            AlunoInfo.class,
+            matricula.getAlunoId()
+        );
+        
+        // 3. Chama ms-curso para pegar dados do curso
+        CursoInfo cursoInfo = restTemplate.getForObject(
+            "http://localhost:8082/cursos/{id}",
+            CursoInfo.class,
+            matricula.getCursoId()
+        );
+        
+        // 4. Monta e retorna a resposta completa
+        return new MatriculaDetalhe(
+            matricula.getId(),
+            matricula.getAlunoId(),
+            matricula.getCursoId(),
+            alunoInfo,
+            cursoInfo
+        );
+    }
+}</code></pre>
+
+            <h3>Fluxo de Enriquecimento de Dados</h3>
+            <div class="module-card">
+                <h4>GET /matriculas/1</h4>
+                <ol>
+                    <li>Controller recebe requisição</li>
+                    <li>Chama: <code>service.buscarComDetalhes(1)</code></li>
+                    <li>Service busca no banco local: matricula_id=1</li>
+                    <li>Service faz: <code>GET http://localhost:8081/alunos/5</code></li>
+                    <li>Service faz: <code>GET http://localhost:8082/cursos/3</code></li>
+                    <li>Service agrega todos os dados</li>
+                    <li>Retorna JSON completo ao cliente</li>
+                </ol>
+            </div>
+
+            <h3>Exemplo de Resposta Enriquecida</h3>
+            <div class="json-example"><code>{
+  "id": 1,
+  "alunoId": 5,
+  "cursoId": 3,
+  "alunoInfo": {
+    "id": 5,
+    "nome": "João Silva",
+    "email": "joao.silva@email.com"
+  },
+  "cursoInfo": {
+    "id": 3,
+    "nome": "Spring Boot Avançado",
+    "descricao": "Desenvolvimento de microsserviços com Spring Boot"
+  }
+}</code></div>
+
+            <div class="success">
+                ? Note que em uma chamada, o cliente recebe dados de 3 microsserviços diferentes agrupados em uma resposta!
+            </div>
+        </section>
+
+        <!-- Instalação -->
+        <section id="instalacao" class="section">
+            <h2><span class="emoji">🚀</span>Instalação e Execução</h2>
+
+            <h3>1️⃣ Pré-requisitos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Software</th>
+                        <th>Versão Mínima</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Java Development Kit</strong></td>
+                        <td>17+</td>
+                        <td><a href="https://www.oracle.com/java/technologies/downloads/" target="_blank">oracle.com</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Apache Maven</strong></td>
+                        <td>3.8+</td>
+                        <td><a href="https://maven.apache.org/download.cgi" target="_blank">maven.apache.org</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>MySQL Server</strong></td>
+                        <td>8+</td>
+                        <td><a href="https://dev.mysql.com/downloads/mysql/" target="_blank">dev.mysql.com</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Node.js + npm</strong></td>
+                        <td>18+</td>
+                        <td><a href="https://nodejs.org/" target="_blank">nodejs.org</a></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2️⃣ Verificar Instalações</h3>
+            <pre><code>java -version
+mvn -version
+mysql --version
+node -v
+npm -v</code></pre>
+
+            <h3>3️⃣ Configurar MySQL</h3>
+            <pre><code>mysql -u root -p</code></pre>
+            <pre><code>-- Execute dentro do MySQL:
+CREATE DATABASE IF NOT EXISTS aluno_db;
+CREATE DATABASE IF NOT EXISTS curso_db;
+CREATE DATABASE IF NOT EXISTS matricula_db;</code></pre>
+
+            <div class="note">
+                <strong>🧭 Credenciais padrão:</strong> Usuário: <code>root</code> | senha: <code>root</code><br/>
+                Se diferentes, atualize em <code>application.properties</code> de cada serviço.
+            </div>
+
+            <h3>4️⃣ Iniciar os microsserviços (3 Terminais Separados)</h3>
+
+            <div class="module-card">
+                <h4>Terminal 1 é ms-aluno (porta 8081)</h4>
+                <pre><code>cd ms-aluno
+mvn spring-boot:run</code></pre>
+                <p>Espere até ver: <code>... Tomcat started on port(s): 8081</code></p>
+            </div>
+
+            <div class="module-card">
+                <h4>Terminal 2 é ms-curso (porta 8082)</h4>
+                <pre><code>cd ms-curso
+mvn spring-boot:run</code></pre>
+                <p>Espere até ver: <code>... Tomcat started on port(s): 8082</code></p>
+            </div>
+
+            <div class="module-card">
+                <h4>Terminal 3 é ms-matricula (porta 8083)</h4>
+                <pre><code>cd ms-matricula
+mvn spring-boot:run</code></pre>
+                <p>Espere até ver: <code>... Tomcat started on port(s): 8083</code></p>
+            </div>
+
+            <h3>5️⃣ Iniciar o Frontend (4é Terminal)</h3>
+            <pre><code>cd frontend
+npm install
+npm run dev</code></pre>
+            <p>Acesse: <a href="http://localhost:5173" target="_blank">http://localhost:5173</a></p>
+
+            <div class="success">
+                ? A aplicação esté pronta! Vocé veré a interface de alunos, cursos e matrículas.
+            </div>
+        </section>
+
+        <!-- APIS -->
+        <section id="apis" class="section">
+            <h2><span class="emoji">📖</span>Documentação das APIs</h2>
+
+            <h3>API ms-aluno (http://localhost:8081)</h3>
+
+            <div class="module-card">
+                <h4><span class="endpoint-method endpoint-get">GET</span>/alunos</h4>
+                <p>Lista todos os alunos cadastrados</p>
+                <strong>Resposta:</strong>
+                <div class="json-example"><code>[
+  {
+    "id": 1,
+    "nome": "João Silva",
+    "email": "joao@email.com"
+  },
+  {
+    "id": 2,
+    "nome": "Maria Santos",
+    "email": "maria@email.com"
+  }
+]</code></div>
+            </div>
+
+            <div class="module-card">
+                <h4><span class="endpoint-method endpoint-get">GET</span>/alunos/{id}</h4>
+                <p>Busca um aluno específico</p>
+                <strong>Exemplo:</strong> <code>GET /alunos/1</code>
+                <strong>Resposta:</strong>
+                <div class="json-example"><code>{
+  "id": 1,
+  "nome": "João Silva",
+  "email": "joao@email.com"
+}</code></div>
+            </div>
+
+            <div class="module-card">
+                <h4><span class="endpoint-method endpoint-post">POST</span>/alunos</h4>
+                <p>Cria um novo aluno</p>
+                <strong>Body:</strong>
+                <div class="json-example"><code>{
+  "nome": "Pedro Costa",
+  "email": "pedro@email.com"
+}</code></div>
+                <strong>Resposta (201 Created):</strong>
+                <div class="json-example"><code>{
+  "id": 3,
+  "nome": "Pedro Costa",
+  "email": "pedro@email.com"
+}</code></div>
+            </div>
+
+            <div class="module-card">
+                <h4><span class="endpoint-method endpoint-put">PUT</span>/alunos/{id}</h4>
+                <p>Atualiza um aluno existente</p>
+                <strong>Exemplo:</strong> <code>PUT /alunos/1</code>
+                <strong>Body:</strong>
+                <div class="json-example"><code>{
+  "nome": "João Silva Oliveira",
+  "email": "joao.novo@email.com"
+}</code></div>
+            </div>
+
+            <div class="module-card">
+                <h4><span class="endpoint-method endpoint-delete">DELETE</span>/alunos/{id}</h4>
+                <p>Deleta um aluno</p>
+                <strong>Exemplo:</strong> <code>DELETE /alunos/1</code>
+                <strong>Resposta:</strong> 200 OK (sem corpo)
+            </div>
+
+            <h3>API ms-curso (http://localhost:8082)</h3>
+            <p><strong>Nota:</strong> Mesma estrutura que ms-aluno, mas com Curso no lugar de Aluno.</p>
+            <ul>
+                <li><code>GET /cursos</code> - Lista todos os cursos</li>
+                <li><code>GET /cursos/{id}</code> - Busca curso específico</li>
+                <li><code>POST /cursos</code> - Cria novo curso</li>
+                <li><code>PUT /cursos/{id}</code> - Atualiza curso</li>
+                <li><code>DELETE /cursos/{id}</code> - Deleta curso</li>
+            </ul>
+
+            <h3>API ms-matricula (http://localhost:8083) - ? Especial</h3>
+
+            <div class="module-card">
+                <h4><span class="endpoint-method endpoint-get">GET</span>/matriculas</h4>
+                <p>Lista TODAS as matrículas com dados enriquecidos</p>
+                <strong>Resposta:</strong>
+                <div class="json-example"><code>[
+  {
+    "id": 1,
+    "alunoId": 1,
+    "cursoId": 1,
+    "alunoInfo": {
+      "id": 1,
+      "nome": "João Silva",
+      "email": "joao@email.com"
+    },
+    "cursoInfo": {
+      "id": 1,
+      "nome": "Spring Boot",
+      "descricao": "Desenvolvendo APIs REST"
+    }
+  }
+]</code></div>
+            </div>
+
+            <div class="module-card">
+                <h4><span class="endpoint-method endpoint-get">GET</span>/matriculas/{id}</h4>
+                <p>Busca matrícula específica com dados completos</p>
+                <strong>Nota:</strong> Retorna a mesma estrutura com dados enriquecidos de ms-aluno e ms-curso
+            </div>
+
+            <div class="module-card">
+                <h4><span class="endpoint-method endpoint-post">POST</span>/matriculas</h4>
+                <p>Cria nova matrícula</p>
+                <strong>Body:</strong>
+                <div class="json-example"><code>{
+  "alunoId": 1,
+  "cursoId": 1
+}</code></div>
+                <strong>Resposta:</strong>
+                <div class="json-example"><code>{
+  "id": 1,
+  "alunoId": 1,
+  "cursoId": 1,
+  "alunoInfo": { ... },
+  "cursoInfo": { ... }
+}</code></div>
+            </div>
+        </section>
+
+        <!-- CONCEITOS -->
+        <section id="conceitos" class="section">
+            <h2><span class="emoji">🎓</span>Conceitos-Chave Demonstrados</h2>
+
+            <h3>padrões de Arquitetura</h3>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <h4>🧭 microsserviços</h4>
+                    <p>Cada serviço é independente, escalável e responsável por um domínio específico. Falha em um não afeta os outros.</p>
+                </div>
+
+                <div class="concept-card">
+                    <h4>🧭 Database per Service</h4>
+                    <p>Cada microsserviço possui seu próprio banco de dados. Evita acoplamento e permite evolução independente.</p>
+                </div>
+
+                <div class="concept-card">
+                    <h4>🧭 REST API</h4>
+                    <p>comunicação padronizada via HTTP com verbos corretos (GET, POST, PUT, DELETE) e respostas em JSON.</p>
+                </div>
+
+                <div class="concept-card">
+                    <h4>🧭 Enriquecimento de Dados</h4>
+                    <p>Agregação de dados de múltiplas fontes para retornar respostas completas sem múltiplas requisições.</p>
+                </div>
+
+                <div class="concept-card">
+                    <h4>🎯 Separação de Responsabilidades</h4>
+                    <p>Controller → Service → Repository: cada camada com sua função clara.</p>
+                </div>
+
+                <div class="concept-card">
+                    <h4>💉 Injeção de Dependência</h4>
+                    <p>Spring gerencia automaticamente instâncias de classes (@Autowired), desacoplando a criação de objetos.</p>
+                </div>
+            </div>
+
+            <h3>padrões de código</h3>
+            <ul>
+                <li><strong>SOLID:</strong> Principios de design orientado a objetos (especialmente SRP e DIP)</li>
+                <li><strong>DAO (Data Access Object):</strong> Repository pattern para acesso ao banco</li>
+                <li><strong>DTO (Data Transfer Object):</strong> MatriculaDetalhe encapsula dados para transferência</li>
+                <li><strong>MVC (Model-View-Controller):</strong> Separação entre model, view (Frontend) e controller</li>
+            </ul>
+
+            <h3>Tecnologias Spring Boot</h3>
+            <ul>
+                <li><strong>@SpringBootApplication:</strong> Anotação que marca classe principal</li>
+                <li><strong>@RestController:</strong> Marca classe como controlador REST, retorna JSON automaticamente</li>
+                <li><strong>@Service:</strong> Marca classe como serviço (Lógica de negócio)</li>
+                <li><strong>@Repository:</strong> Marca interface como acesso a dados</li>
+                <li><strong>@Entity:</strong> Marca classe como entidade JPA</li>
+                <li><strong>@Autowired:</strong> Injeção automática de dependências</li>
+            </ul>
+
+            <h3>Ferramentas e Frameworks</h3>
+            <ul>
+                <li><strong>JPA/Hibernate:</strong> ORM (Object-Relational Mapping) que mapeia classes Java a tabelas SQL</li>
+                <li><strong>Spring Data JPA:</strong> Abstrai ainda mais, gerando queries automaticamente</li>
+                <li><strong>Lombok:</strong> Reduz boilerplate com anotações (@Data, @NoArgsConstructor)</li>
+                <li><strong>RestTemplate:</strong> Cliente HTTP do Spring para chamar outros serviços</li>
+                <li><strong>React Hooks:</strong> useState, useEffect para gerenciar estado no frontend</li>
+                <li><strong>Axios:</strong> Promise-based HTTP client para JavaScript</li>
+            </ul>
+        </section>
+
+        <!-- FOOTER -->
+        <footer>
+            <p><strong>Sistema de Gestão Acadêmica • microsserviços</strong></p>
+            <p>Projeto educacional demonstrando arquitetura moderna de desenvolvimento distribuído</p>
+            <p>
+                <a href="https://spring.io/projects/spring-boot" target="_blank">Spring Boot</a> |
+                <a href="https://react.dev" target="_blank">React</a> |
+                <a href="https://dev.mysql.com/" target="_blank">MySQL</a> |
+                <a href="https://microservices.io/" target="_blank">Microservices Patterns</a>
+            </p>
+            <p style="margin-top: 20px; font-size: 0.9em; color: var(--text-secondary);">
+                © 2026 • Documentação técnica para apresentação Acadêmica
+            </p>
+        </footer>
+
+        </div> <!-- fim da main-content -->
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
