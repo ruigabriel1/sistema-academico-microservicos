@@ -1,5 +1,7 @@
 package com.a3.msmatricula.controller;
 
+import com.a3.msmatricula.dto.MatriculaDTO;
+import com.a3.msmatricula.exception.ResourceNotFoundException;
 import com.a3.msmatricula.model.Matricula;
 import com.a3.msmatricula.model.MatriculaDetalhe;
 import com.a3.msmatricula.service.MatriculaService;
@@ -9,61 +11,46 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// Controller REST do microserviço de Matrículas
-// Rota base: /matriculas
-// Os endpoints GET retornam MatriculaDetalhe (com dados enriquecidos de aluno e curso via REST)
-// Os endpoints POST e PUT recebem Matricula (apenas os IDs de aluno e curso)
 @RestController
 @RequestMapping("/matriculas")
-@CrossOrigin(origins = "*") // Permite chamadas do front-end de qualquer origem
+@CrossOrigin(origins = "*")
 public class MatriculaController {
 
-    // Injeção da camada de serviço onde ocorre a lógica e a comunicação entre serviços
     @Autowired
     private MatriculaService matriculaService;
 
-    // GET /matriculas
-    // Retorna todas as matrículas com os dados completos de aluno e curso (via REST)
     @GetMapping
     public List<MatriculaDetalhe> listarTodas() {
         return matriculaService.listarTodas();
     }
 
-    // GET /matriculas/{id}
-    // Retorna uma matrícula específica com os dados enriquecidos — 404 se não encontrada
     @GetMapping("/{id}")
     public ResponseEntity<MatriculaDetalhe> buscarPorId(@PathVariable Long id) {
-        return matriculaService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        MatriculaDetalhe matricula = matriculaService.buscarPorId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Matrícula não encontrada com ID: " + id));
+        return ResponseEntity.ok(matricula);
     }
 
-    // POST /matriculas
-    // Registra uma nova matrícula — recebe apenas alunoId, cursoId, dataMatricula e status
     @PostMapping
-    public ResponseEntity<Matricula> cadastrar(@RequestBody Matricula matricula) {
-        Matricula salva = matriculaService.salvar(matricula);
-        return ResponseEntity.status(201).body(salva);
+    public ResponseEntity<MatriculaDTO> cadastrar(@RequestBody MatriculaDTO dto) {
+        Matricula salva = matriculaService.salvar(dto.toEntity());
+        return ResponseEntity.status(201).body(MatriculaDTO.fromEntity(salva));
     }
 
-    // PUT /matriculas/{id}
-    // Atualiza os dados de uma matrícula existente — 404 se não encontrada
     @PutMapping("/{id}")
-    public ResponseEntity<Matricula> atualizar(@PathVariable Long id, @RequestBody Matricula matricula) {
-        Matricula atualizada = matriculaService.atualizar(id, matricula);
+    public ResponseEntity<MatriculaDTO> atualizar(@PathVariable Long id, @RequestBody MatriculaDTO dto) {
+        Matricula atualizada = matriculaService.atualizar(id, dto.toEntity());
         if (atualizada == null) {
-            return ResponseEntity.notFound().build();
+            throw new ResourceNotFoundException("Não é possível atualizar. Matrícula não encontrada com ID: " + id);
         }
-        return ResponseEntity.ok(atualizada);
+        return ResponseEntity.ok(MatriculaDTO.fromEntity(atualizada));
     }
 
-    // DELETE /matriculas/{id}
-    // Remove uma matrícula pelo ID — 204 se removida, 404 se não encontrada
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        if (matriculaService.deletar(id)) {
-            return ResponseEntity.noContent().build();
+        if (!matriculaService.deletar(id)) {
+            throw new ResourceNotFoundException("Não é possível remover. Matrícula não encontrada com ID: " + id);
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 }

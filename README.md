@@ -1,13 +1,23 @@
 # Sistema Acadêmico — A3 Sistemas Distribuídos
 
-Aplicação baseada em **microserviços** desenvolvida com **Java + Spring Boot** e **React (Vite)**.  
-Tema: Sistema Acadêmico (Aluno, Curso, Matrícula).
+Aplicação baseada em **microserviços** desenvolvida com **Java 17 + Spring Boot 3.2** e **React (Vite)**.  
+Tema: Sistema Acadêmico (Aluno, Curso, Matrícula). O projeto foca em boas práticas de mercado, como integração de **Swagger** (OpenAPI), uso de **DTOs (Records)**, **Tratamento Global de Exceções** e scripts de automação.
 
 ---
 
-## Arquitetura
+## 🎯 Melhorias Técnicas e Profissionais (Diferenciais)
 
-```
+- **Swagger (OpenAPI):** Documentação interativa das APIs de todos os microserviços.
+- **Data Transfer Objects (DTOs):** Implementados utilizando `Records` do Java 17 para maior segurança, performance e imutabilidade no tráfego de dados.
+- **Tratamento Global de Exceções (@ControllerAdvice):** Padronização das respostas de erro em toda a aplicação (ex: Erros 404, 400), garantindo maior legibilidade para o cliente (Front-end).
+- **Automação de Ambiente:** Scripts `.bat` criados para iniciar e parar todos os microserviços e o frontend com apenas um clique (`iniciar.bat` e `parar.bat`), otimizando o tempo de avaliação.
+- **Documentação Moderna:** Além deste arquivo `.md`, o projeto conta com uma página `README.html` focada em legibilidade e apresentação profissional para a banca avaliadora.
+
+---
+
+## 🏗️ Arquitetura
+
+```text
 ┌─────────────────────────────────────────────┐
 │          FRONT-END (React + Vite)           │
 │     Alunos | Cursos | Matrículas            │
@@ -32,11 +42,11 @@ Tema: Sistema Acadêmico (Aluno, Curso, Matrícula).
 
 ### Microserviços
 
-| Serviço | Porta | Banco | Responsabilidade |
-|---|---|---|---|
-| `ms-aluno` | 8081 | `aluno_db` | CRUD de Alunos |
-| `ms-curso` | 8082 | `curso_db` | CRUD de Cursos |
-| `ms-matricula` | 8083 | `matricula_db` | CRUD de Matrículas + consome ms-aluno e ms-curso |
+| Serviço | Porta | Banco | Responsabilidade | Documentação API (Swagger) |
+|---|---|---|---|---|
+| `ms-aluno` | 8081 | `aluno_db` | CRUD de Alunos | `http://localhost:8081/swagger-ui.html` |
+| `ms-curso` | 8082 | `curso_db` | CRUD de Cursos | `http://localhost:8082/swagger-ui.html` |
+| `ms-matricula` | 8083 | `matricula_db` | CRUD de Matrículas | `http://localhost:8083/swagger-ui.html` |
 
 ### Comunicação entre Microserviços
 
@@ -48,24 +58,31 @@ Ao consultar uma matrícula, o serviço monta uma resposta enriquecida com nome 
 
 ---
 
-## Pré-requisitos
+## 🛠️ Pré-requisitos
 
 - **Java 17+**
 - **Maven 3.8+**
-- **MySQL 8+** rodando localmente na porta 3306
+- **MySQL 8+** rodando localmente na porta 3306 (Usuário: `root`, Senha: `root`)
 - **Node.js 18+** e **npm**
 
 ---
 
-## Como Executar
+## 🚀 Como Executar
 
 ### 1. Configure o MySQL
 
 Crie um usuário `root` com senha `root` (ou ajuste o `application.properties` de cada serviço).  
-Os bancos (`aluno_db`, `curso_db`, `matricula_db`) são criados automaticamente na primeira execução.
+Os bancos (`aluno_db`, `curso_db`, `matricula_db`) são criados automaticamente na primeira execução através do Hibernate.
 
-### 2. Inicie os microserviços (em terminais separados)
+### 2. Execução Automatizada (Recomendado)
 
+Na raiz do projeto, basta dar um duplo clique nos scripts (Windows):
+- **`iniciar.bat`**: Instala as dependências, inicia o Front-end e sobe todos os microserviços.
+- **`parar.bat`**: Encerra os processos nas portas 8081, 8082, 8083 e 5173 de forma limpa.
+
+### 3. Execução Manual
+
+**Microserviços (em terminais separados):**
 ```bash
 # Terminal 1 — ms-aluno
 cd ms-aluno
@@ -80,55 +97,21 @@ cd ms-matricula
 mvn spring-boot:run
 ```
 
-### 3. Inicie o front-end
-
+**Front-end:**
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Acesse: **http://localhost:5173**
+Acesse a interface da aplicação em: **http://localhost:5173**
 
 ---
 
-## Endpoints das APIs
+## 💻 Stack Utilizada
 
-### ms-aluno — `http://localhost:8081`
-
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/alunos` | Lista todos os alunos |
-| GET | `/alunos/{id}` | Busca aluno por ID |
-| POST | `/alunos` | Cadastra novo aluno |
-| PUT | `/alunos/{id}` | Atualiza aluno |
-| DELETE | `/alunos/{id}` | Remove aluno |
-
-### ms-curso — `http://localhost:8082`
-
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/cursos` | Lista todos os cursos |
-| GET | `/cursos/{id}` | Busca curso por ID |
-| POST | `/cursos` | Cadastra novo curso |
-| PUT | `/cursos/{id}` | Atualiza curso |
-| DELETE | `/cursos/{id}` | Remove curso |
-
-### ms-matricula — `http://localhost:8083`
-
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/matriculas` | Lista matrículas com dados de aluno e curso |
-| GET | `/matriculas/{id}` | Busca matrícula por ID com dados enriquecidos |
-| POST | `/matriculas` | Registra nova matrícula |
-| PUT | `/matriculas/{id}` | Atualiza matrícula |
-| DELETE | `/matriculas/{id}` | Remove matrícula |
-
----
-
-## Stack Utilizada
-
-- **Backend:** Java 17, Spring Boot 3.2, Spring Data JPA, Spring Web, Lombok
+- **Backend:** Java 17, Spring Boot 3.2, Spring Data JPA, Spring Web, Lombok, OpenAPI (Swagger)
 - **Banco de dados:** MySQL 8
 - **Comunicação entre serviços:** RestTemplate (HTTP REST)
 - **Frontend:** React 18, Vite 5, React Router DOM 6, Axios
+- **Design de Interface:** Custom CSS / Documentação (`README.html`)

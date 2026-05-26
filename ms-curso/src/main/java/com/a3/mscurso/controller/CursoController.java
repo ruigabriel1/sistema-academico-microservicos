@@ -1,5 +1,7 @@
 package com.a3.mscurso.controller;
 
+import com.a3.mscurso.dto.CursoDTO;
+import com.a3.mscurso.exception.ResourceNotFoundException;
 import com.a3.mscurso.model.Curso;
 import com.a3.mscurso.service.CursoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,61 +9,50 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-// Camada de Controller: expõe os endpoints REST do microserviço de Cursos
-// Rota base: /cursos
 @RestController
 @RequestMapping("/cursos")
-@CrossOrigin(origins = "*") // Libera o acesso ao front-end (React) de qualquer origem
+@CrossOrigin(origins = "*")
 public class CursoController {
 
-    // Injeção da camada de serviço onde ficam as regras de negócio
     @Autowired
     private CursoService cursoService;
 
-    // GET /cursos
-    // Retorna todos os cursos cadastrados no sistema
     @GetMapping
-    public List<Curso> listarTodos() {
-        return cursoService.listarTodos();
+    public List<CursoDTO> listarTodos() {
+        return cursoService.listarTodos().stream()
+                .map(CursoDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    // GET /cursos/{id}
-    // Retorna um curso específico pelo ID — 404 se não encontrado
-    // Também é utilizado pelo ms-matricula ao consultar dados do curso via REST
     @GetMapping("/{id}")
-    public ResponseEntity<Curso> buscarPorId(@PathVariable Long id) {
-        return cursoService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<CursoDTO> buscarPorId(@PathVariable Long id) {
+        Curso curso = cursoService.buscarPorId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado com ID: " + id));
+        return ResponseEntity.ok(CursoDTO.fromEntity(curso));
     }
 
-    // POST /cursos
-    // Cadastra um novo curso a partir do corpo da requisição — retorna 201 Created
     @PostMapping
-    public ResponseEntity<Curso> cadastrar(@RequestBody Curso curso) {
-        Curso salvo = cursoService.salvar(curso);
-        return ResponseEntity.status(201).body(salvo);
+    public ResponseEntity<CursoDTO> cadastrar(@RequestBody CursoDTO dto) {
+        Curso salvo = cursoService.salvar(dto.toEntity());
+        return ResponseEntity.status(201).body(CursoDTO.fromEntity(salvo));
     }
 
-    // PUT /cursos/{id}
-    // Atualiza todos os dados de um curso existente — 404 se não encontrado
     @PutMapping("/{id}")
-    public ResponseEntity<Curso> atualizar(@PathVariable Long id, @RequestBody Curso curso) {
-        Curso atualizado = cursoService.atualizar(id, curso);
+    public ResponseEntity<CursoDTO> atualizar(@PathVariable Long id, @RequestBody CursoDTO dto) {
+        Curso atualizado = cursoService.atualizar(id, dto.toEntity());
         if (atualizado == null) {
-            return ResponseEntity.notFound().build();
+            throw new ResourceNotFoundException("Não é possível atualizar. Curso não encontrado com ID: " + id);
         }
-        return ResponseEntity.ok(atualizado);
+        return ResponseEntity.ok(CursoDTO.fromEntity(atualizado));
     }
 
-    // DELETE /cursos/{id}
-    // Remove um curso pelo ID — 204 se removido, 404 se não encontrado
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        if (cursoService.deletar(id)) {
-            return ResponseEntity.noContent().build();
+        if (!cursoService.deletar(id)) {
+            throw new ResourceNotFoundException("Não é possível remover. Curso não encontrado com ID: " + id);
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 }
