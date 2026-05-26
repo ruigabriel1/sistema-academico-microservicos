@@ -5,10 +5,9 @@ import com.a3.msmatricula.exception.ResourceNotFoundException;
 import com.a3.msmatricula.model.Matricula;
 import com.a3.msmatricula.model.MatriculaDetalhe;
 import com.a3.msmatricula.service.MatriculaService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -16,8 +15,12 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class MatriculaController {
 
-    @Autowired
-    private MatriculaService matriculaService;
+    private final MatriculaService matriculaService;
+
+    // Injeção de dependência via construtor
+    public MatriculaController(MatriculaService matriculaService) {
+        this.matriculaService = matriculaService;
+    }
 
     @GetMapping
     public List<MatriculaDetalhe> listarTodas() {
@@ -32,13 +35,13 @@ public class MatriculaController {
     }
 
     @PostMapping
-    public ResponseEntity<MatriculaDTO> cadastrar(@RequestBody MatriculaDTO dto) {
+    public ResponseEntity<MatriculaDTO> cadastrar(@Valid @RequestBody MatriculaDTO dto) {
         Matricula salva = matriculaService.salvar(dto.toEntity());
         return ResponseEntity.status(201).body(MatriculaDTO.fromEntity(salva));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MatriculaDTO> atualizar(@PathVariable Long id, @RequestBody MatriculaDTO dto) {
+    public ResponseEntity<MatriculaDTO> atualizar(@PathVariable Long id, @Valid @RequestBody MatriculaDTO dto) {
         Matricula atualizada = matriculaService.atualizar(id, dto.toEntity());
         if (atualizada == null) {
             throw new ResourceNotFoundException("Não é possível atualizar. Matrícula não encontrada com ID: " + id);

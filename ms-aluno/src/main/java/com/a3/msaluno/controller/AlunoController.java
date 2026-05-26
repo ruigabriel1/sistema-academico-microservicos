@@ -4,10 +4,10 @@ import com.a3.msaluno.dto.AlunoDTO;
 import com.a3.msaluno.exception.ResourceNotFoundException;
 import com.a3.msaluno.model.Aluno;
 import com.a3.msaluno.service.AlunoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,8 +18,12 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*") // Permite chamadas do front-end (React) em qualquer origem
 public class AlunoController {
 
-    @Autowired
-    private AlunoService alunoService;
+    private final AlunoService alunoService;
+
+    // Injeção de dependência via construtor (Boa prática recomendada pelo Spring)
+    public AlunoController(AlunoService alunoService) {
+        this.alunoService = alunoService;
+    }
 
     // GET /alunos
     @GetMapping
@@ -39,14 +43,14 @@ public class AlunoController {
 
     // POST /alunos
     @PostMapping
-    public ResponseEntity<AlunoDTO> cadastrar(@RequestBody AlunoDTO dto) {
+    public ResponseEntity<AlunoDTO> cadastrar(@Valid @RequestBody AlunoDTO dto) {
         Aluno salvo = alunoService.salvar(dto.toEntity());
         return ResponseEntity.status(201).body(AlunoDTO.fromEntity(salvo));
     }
 
     // PUT /alunos/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<AlunoDTO> atualizar(@PathVariable Long id, @RequestBody AlunoDTO dto) {
+    public ResponseEntity<AlunoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody AlunoDTO dto) {
         Aluno atualizado = alunoService.atualizar(id, dto.toEntity());
         if (atualizado == null) {
             throw new ResourceNotFoundException("Não é possível atualizar. Aluno não encontrado com ID: " + id);

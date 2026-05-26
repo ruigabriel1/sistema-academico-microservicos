@@ -10,6 +10,9 @@ Tema: Sistema Acadêmico (Aluno, Curso, Matrícula). O projeto foca em boas prá
 - **Swagger (OpenAPI):** Documentação interativa das APIs de todos os microserviços.
 - **Data Transfer Objects (DTOs):** Implementados utilizando `Records` do Java 17 para maior segurança, performance e imutabilidade no tráfego de dados.
 - **Tratamento Global de Exceções (@ControllerAdvice):** Padronização das respostas de erro em toda a aplicação (ex: Erros 404, 400), garantindo maior legibilidade para o cliente (Front-end).
+- **Validação de Entrada (Bean Validation):** Integração do `spring-boot-starter-validation` com anotações de validação nos DTOs (como `@NotBlank`, `@Email`, `@Size`, `@Min`, `@NotNull`) e validação ativa nos Controllers com `@Valid`.
+- **Injeção de Dependência por Construtor:** Refatorado todas as injeções de dependência do Spring (Services e Controllers) de `@Autowired` em atributos privados para injeção via construtor, seguindo as melhores práticas oficiais.
+- **Loggers Estruturados com SLF4J (Lombok @Slf4j):** Eliminação de `System.out.println` no fluxo do microsserviço de Matrícula, adotando logs com níveis de severidade adequados (`log.info` e `log.warn`).
 - **Automação de Ambiente:** Scripts `.bat` criados para iniciar e parar todos os microserviços e o frontend com apenas um clique (`iniciar.bat` e `parar.bat`), otimizando o tempo de avaliação.
 - **Documentação Moderna:** Além deste arquivo `.md`, o projeto conta com uma página `README.html` focada em legibilidade e apresentação profissional para a banca avaliadora.
 

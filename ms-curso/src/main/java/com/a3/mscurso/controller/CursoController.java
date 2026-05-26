@@ -4,10 +4,9 @@ import com.a3.mscurso.dto.CursoDTO;
 import com.a3.mscurso.exception.ResourceNotFoundException;
 import com.a3.mscurso.model.Curso;
 import com.a3.mscurso.service.CursoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,8 +15,12 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class CursoController {
 
-    @Autowired
-    private CursoService cursoService;
+    private final CursoService cursoService;
+
+    // Injeção de dependência via construtor
+    public CursoController(CursoService cursoService) {
+        this.cursoService = cursoService;
+    }
 
     @GetMapping
     public List<CursoDTO> listarTodos() {
@@ -34,13 +37,13 @@ public class CursoController {
     }
 
     @PostMapping
-    public ResponseEntity<CursoDTO> cadastrar(@RequestBody CursoDTO dto) {
+    public ResponseEntity<CursoDTO> cadastrar(@Valid @RequestBody CursoDTO dto) {
         Curso salvo = cursoService.salvar(dto.toEntity());
         return ResponseEntity.status(201).body(CursoDTO.fromEntity(salvo));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CursoDTO> atualizar(@PathVariable Long id, @RequestBody CursoDTO dto) {
+    public ResponseEntity<CursoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody CursoDTO dto) {
         Curso atualizado = cursoService.atualizar(id, dto.toEntity());
         if (atualizado == null) {
             throw new ResourceNotFoundException("Não é possível atualizar. Curso não encontrado com ID: " + id);

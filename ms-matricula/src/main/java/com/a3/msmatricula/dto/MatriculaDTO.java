@@ -2,12 +2,22 @@ package com.a3.msmatricula.dto;
 
 import com.a3.msmatricula.model.Matricula;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 // Record para entrada de dados de Matrícula (Criação e Atualização)
 public record MatriculaDTO(
         Long id,
+
+        @NotNull(message = "O ID do aluno é obrigatório")
         Long alunoId,
+
+        @NotNull(message = "O ID do curso é obrigatório")
         Long cursoId,
+
         String dataMatricula,
+
+        @NotBlank(message = "O status da matrícula é obrigatório")
         String status
 ) {
     public static MatriculaDTO fromEntity(Matricula matricula) {
