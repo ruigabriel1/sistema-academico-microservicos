@@ -22,17 +22,17 @@ if %errorlevel% neq 0 (
 
 :: ms-aluno (porta 8081)
 echo [2/5] Iniciando ms-aluno   (porta 8081)...
-start "ms-aluno  :8081" cmd /k "set JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-17.0.19.10-hotspot & set PATH=C:\Program Files\Eclipse Adoptium\jdk-17.0.19.10-hotspot\bin;C:\Program Files\Maven\bin;%PATH% & cd /d %~dp0ms-aluno & mvn spring-boot:run"
+start "ms-aluno  :8081" cmd /k "cd /d %~dp0ms-aluno & mvn spring-boot:run"
 timeout /t 2 /nobreak >nul
 
 :: ms-curso (porta 8082)
 echo [3/5] Iniciando ms-curso   (porta 8082)...
-start "ms-curso  :8082" cmd /k "set JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-17.0.19.10-hotspot & set PATH=C:\Program Files\Eclipse Adoptium\jdk-17.0.19.10-hotspot\bin;C:\Program Files\Maven\bin;%PATH% & cd /d %~dp0ms-curso & mvn spring-boot:run"
+start "ms-curso  :8082" cmd /k "cd /d %~dp0ms-curso & mvn spring-boot:run"
 timeout /t 2 /nobreak >nul
 
 :: ms-matricula (porta 8083)
 echo [4/5] Iniciando ms-matricula (porta 8083)...
-start "ms-matricula :8083" cmd /k "set JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-17.0.19.10-hotspot & set PATH=C:\Program Files\Eclipse Adoptium\jdk-17.0.19.10-hotspot\bin;C:\Program Files\Maven\bin;%PATH% & cd /d %~dp0ms-matricula & mvn spring-boot:run"
+start "ms-matricula :8083" cmd /k "cd /d %~dp0ms-matricula & mvn spring-boot:run"
 
 :: ============================================================
 :: Aguarda os microserviços inicializarem antes do frontend
