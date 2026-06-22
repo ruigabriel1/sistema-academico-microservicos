@@ -36,3 +36,9 @@ logs/
 # ============================
 .env
 .env.local
+
+# ============================
+# IDEs e Agentes de IA
+# ============================
+.antigravitycli/
+.gemini/
